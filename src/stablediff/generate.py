@@ -21,7 +21,7 @@ from typing import List, Optional
 import torch
 from diffusers import StableDiffusionPipeline
 
-from .util import attach_lora, load_lora_checkpoint
+from .util import attach_lora, load_lora_checkpoint, suppress_known_upstream_warnings
 
 DEFAULT_BASE_MODEL = "runwayml/stable-diffusion-v1-5"
 
@@ -59,6 +59,7 @@ def _resolve_dtype(name: str, device: str) -> torch.dtype:
 
 
 def main() -> None:
+    suppress_known_upstream_warnings()
     args = parse_args()
     device = "cuda" if torch.cuda.is_available() else "cpu"
     dtype = _resolve_dtype(args.dtype, device)

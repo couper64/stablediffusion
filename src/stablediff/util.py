@@ -10,12 +10,23 @@ A LoRA checkpoint is a single ``torch.save`` dict with keys:
 
 from __future__ import annotations
 
+import warnings
 from pathlib import Path
 from typing import Any, Dict, Optional
 
 import torch
 from peft import LoraConfig
 from peft.utils import get_peft_model_state_dict, set_peft_model_state_dict
+
+
+def suppress_known_upstream_warnings() -> None:
+    """Silence deprecation noise from dependencies until upstream removes it."""
+    warnings.filterwarnings(
+        "ignore",
+        message=r"The `local_dir_use_symlinks` argument is deprecated",
+        category=UserWarning,
+        module=r"huggingface_hub\.utils\._validators",
+    )
 
 
 def save_lora(
@@ -39,7 +50,7 @@ def save_lora(
 
 
 def load_lora_checkpoint(path: Path) -> Dict[str, Any]:
-    return torch.load(Path(path), map_location="cpu")
+    return torch.load(Path(path), map_location="cpu", weights_only=True)
 
 
 def attach_lora(unet, checkpoint: Dict[str, Any]) -> LoraConfig:

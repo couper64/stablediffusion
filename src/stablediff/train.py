@@ -28,7 +28,7 @@ from tqdm import tqdm
 from transformers import CLIPTextModel, CLIPTokenizer
 
 from .dataset import ImageCaptionDataset
-from .util import save_lora
+from .util import save_lora, suppress_known_upstream_warnings
 
 DEFAULT_TARGET_MODULES: List[str] = ["to_q", "to_k", "to_v", "to_out.0"]
 
@@ -67,6 +67,7 @@ def _pick_dtype(precision: str, device: str) -> torch.dtype:
 
 
 def main() -> None:
+    suppress_known_upstream_warnings()
     args = parse_args()
     torch.manual_seed(args.seed)
 
@@ -141,7 +142,7 @@ def main() -> None:
         raise RuntimeError("Training loader is empty; reduce --batch-size or --val-split.")
 
     optimizer = torch.optim.AdamW(lora_params, lr=args.learning_rate, weight_decay=args.weight_decay)
-    scaler = torch.cuda.amp.GradScaler(enabled=use_scaler)
+    scaler = torch.amp.GradScaler("cuda", enabled=use_scaler)
 
     def encode_text(input_ids: torch.Tensor) -> torch.Tensor:
         with torch.no_grad():
