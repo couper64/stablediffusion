@@ -1,0 +1,21 @@
+name: stablediff
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - pytorch>=2.1
+  - torchvision>=0.16
+  # Use `cpuonly` instead of `pytorch-cuda` on machines without a CUDA GPU.
+  - pytorch-cuda=12.1
+  - pip:
+      - diffusers>=0.27
+      - transformers>=4.40
+      - accelerate>=0.30
+      - peft>=0.10
+      - safetensors>=0.4
+      - Pillow>=10
+      - tqdm>=4.66
+      - numpy>=1.24

@@ -1,0 +1,103 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+pip-wheel-metadata/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+
+# --- Virtual environments / conda ---
+.venv/
+venv/
+ENV/
+env/
+.env
+.env.*
+!.env.example
+environment.lock.yml
+.conda/
+
+# --- IDE / editor ---
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.cursor/
+
+# --- OS ---
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# --- Jupyter ---
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# --- ML training outputs ---
+checkpoints/
+outputs/
+runs/
+logs/
+wandb/
+tensorboard/
+lightning_logs/
+mlruns/
+
+# --- Model / artifact binaries (also tracked via Git LFS when committed) ---
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.bin
+*.onnx
+*.zip
+
+# --- Hugging Face / diffusers caches ---
+.cache/
+huggingface/
+hf_cache/
+**/hub/
+**/models--*/
+**/snapshots--*/
+**/.locks/
+
+# --- Torch / CUDA caches ---
+*.npy.tmp
+
+# --- Datasets (large; keep layout docs only) ---
+data/**
+!data/
+!data/README.md
+!data/**/.gitkeep

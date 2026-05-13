@@ -1,0 +1,43 @@
+# Normalize line endings for text files on checkout/commit.
+* text=auto
+
+# Source and config (always treated as text).
+*.py          text eol=lf linguist-detectable
+*.md          text eol=lf linguist-detectable
+*.toml        text eol=lf linguist-detectable
+*.yml         text eol=lf linguist-detectable
+*.yaml        text eol=lf linguist-detectable
+*.txt         text eol=lf linguist-detectable
+*.json        text eol=lf linguist-detectable
+*.jsonl       text eol=lf linguist-detectable
+*.sh          text eol=lf linguist-detectable
+*.gitignore   text eol=lf
+*.gitattributes text eol=lf
+
+# Windows scripts keep CRLF if added later.
+*.bat         text eol=crlf
+*.cmd         text eol=crlf
+*.ps1         text eol=crlf
+
+# Binary assets — store in Git LFS (repo already has LFS enabled).
+*.jpg         filter=lfs diff=lfs merge=lfs -text
+*.jpeg        filter=lfs diff=lfs merge=lfs -text
+*.png         filter=lfs diff=lfs merge=lfs -text
+*.webp        filter=lfs diff=lfs merge=lfs -text
+*.bmp         filter=lfs diff=lfs merge=lfs -text
+*.gif         filter=lfs diff=lfs merge=lfs -text
+*.tif         filter=lfs diff=lfs merge=lfs -text
+*.tiff        filter=lfs diff=lfs merge=lfs -text
+
+# Model checkpoints and training artifacts.
+*.pt          filter=lfs diff=lfs merge=lfs -text
+*.pth         filter=lfs diff=lfs merge=lfs -text
+*.ckpt        filter=lfs diff=lfs merge=lfs -text
+*.safetensors filter=lfs diff=lfs merge=lfs -text
+*.bin         filter=lfs diff=lfs merge=lfs -text
+*.onnx        filter=lfs diff=lfs merge=lfs -text
+*.zip         filter=lfs diff=lfs merge=lfs -text
+
+# Generated outputs should not be committed; mark as binary if they slip in.
+outputs/**    -diff linguist-generated
+checkpoints/** -diff linguist-generated
