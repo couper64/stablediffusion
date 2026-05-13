@@ -101,3 +101,5 @@ data/**
 !data/
 !data/README.md
 !data/**/.gitkeep
+!data/sample/
+!data/sample/**

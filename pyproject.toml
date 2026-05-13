@@ -25,5 +25,15 @@ dependencies = [
 stablediff-train = "stablediff.train:main"
 stablediff-generate = "stablediff.generate:main"
 
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "integration: loads models and runs training (slow, needs GPU).",
+    "slow: long-running test.",
+]

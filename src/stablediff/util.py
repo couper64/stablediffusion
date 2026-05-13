@@ -27,6 +27,11 @@ def suppress_known_upstream_warnings() -> None:
         category=UserWarning,
         module=r"huggingface_hub\.utils\._validators",
     )
+    warnings.filterwarnings(
+        "ignore",
+        message=r".*BPE\.__init__ will not create from files anymore",
+        category=DeprecationWarning,
+    )
 
 
 def save_lora(
