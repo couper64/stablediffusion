@@ -29,6 +29,7 @@ stablediff-generate = "stablediff.generate:main"
 stablediff-eval = "stablediff.evaluate:main"
 stablediff-benchmark = "stablediff.benchmark:main"
 stablediff-preprocess = "stablediff.preprocess:main"
+stablediff-pipeline = "stablediff.pipeline:main"
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]

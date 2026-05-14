@@ -8,4 +8,4 @@
 
 * Use `conda` to manage virtual environments.
 
-* A global CLI script that defines a pipeline: preprocess, train (optional), generate, evaluate, benchmark. The pipeline's input is a folder with images grouped into classes. The output is a fine-tuned model, generated images, and metrics.
+* A global CLI script that defines a benchmarked pipeline: preprocess, train (optional), generate, evaluate. The pipeline's input is a folder with images grouped into classes. The output is a fine-tuned model, generated images, and metrics.
