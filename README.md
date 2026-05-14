@@ -106,14 +106,28 @@ src/stablediff/
 
 ## Bundled sample dataset: `data/sample`
 
-The repo includes `data/sample/` with 10 uncaptioned `.jpg` cat photos (a tiny subset of the Microsoft Cats-vs-Dogs set). Use it for quick end-to-end smoke tests:
+The repo includes `data/sample/` with 10 cat and 10 dog `.jpg` photos in class subfolders (`Cat/`, `Dog/`), plus a `metadata.jsonl` with per-class captions. Use it for quick end-to-end smoke tests:
+
+**Preprocess** the sample dataset:
+
+```
+data/sample/
+    Cat/0.jpg … Cat/9.jpg
+    Dog/0.jpg … Dog/9.jpg
+    metadata.jsonl
+```
+
+Regenerate captions after changing images with:
+
+```bash
+stablediff-preprocess --data-dir data/sample --overwrite
+```
 
 **Train** a LoRA adapter:
 
 ```bash
 stablediff-train \
     --data-dir data/sample \
-    --default-caption "a photo of a cat" \
     --output output/model/sample.pt \
     --resolution 512 \
     --epochs 2 \
@@ -140,7 +154,7 @@ stablediff-eval \
     --output output/metric/fid_is.json
 ```
 
-Lower FID is better; higher Inception Score is better. Both metrics need a reasonably large image set to be meaningful — treat results on 10 images as a pipeline check only.
+Lower FID is better; higher Inception Score is better. Both metrics need a reasonably large image set to be meaningful — treat results on 20 images as a pipeline check only.
 
 **Benchmark** single-image inference latency and energy (CodeCarbon + high-precision timer, written to JSON):
 

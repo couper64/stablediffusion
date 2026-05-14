@@ -28,6 +28,7 @@ stablediff-train = "stablediff.train:main"
 stablediff-generate = "stablediff.generate:main"
 stablediff-eval = "stablediff.evaluate:main"
 stablediff-benchmark = "stablediff.benchmark:main"
+stablediff-preprocess = "stablediff.preprocess:main"
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]

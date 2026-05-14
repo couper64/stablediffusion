@@ -29,8 +29,6 @@ def test_train_on_image_sample(sample_image_dir: Path, tmp_path: Path, monkeypat
             str(sample_image_dir),
             "--output",
             str(output_path),
-            "--default-caption",
-            "a photo of a cat",
             "--epochs",
             "1",
             "--rank",

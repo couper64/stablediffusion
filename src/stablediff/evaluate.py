@@ -61,6 +61,7 @@ def main() -> None:
         cuda=device == "cuda",
         batch_size=args.batch_size,
         save_cpu_ram=True,
+        samples_find_deep=True,
         fid=True,
         isc=True,
     )

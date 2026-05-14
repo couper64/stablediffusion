@@ -21,7 +21,7 @@ def sample_image_dir() -> Path:
     if not SAMPLE_DATASET_DIR.is_dir():
         pytest.skip(f"Bundled sample dataset not found: {SAMPLE_DATASET_DIR}")
 
-    images = sorted(SAMPLE_DATASET_DIR.glob("*.jpg"))
-    if not images:
-        pytest.skip(f"No images found under {SAMPLE_DATASET_DIR}")
+    images = sorted(SAMPLE_DATASET_DIR.rglob("*.jpg"))
+    if len(images) < 2:
+        pytest.skip(f"Not enough images found under {SAMPLE_DATASET_DIR}")
     return SAMPLE_DATASET_DIR
