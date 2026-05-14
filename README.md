@@ -1,9 +1,13 @@
 # stablediff
 
-Two small CLI tools for Stable Diffusion on a custom image dataset:
+CLI tools for Stable Diffusion LoRA workflows on class-folder image datasets:
 
+- `stablediff-preprocess` — build `metadata.jsonl` captions from class subfolders.
 - `stablediff-train` — fine-tune a base Stable Diffusion model with LoRA and save the **best** checkpoint as a single `*.pt` file.
-- `stablediff-generate` — generate images with the trained LoRA (or the plain base model).
+- `stablediff-generate` — generate images with a trained LoRA (or the plain base model).
+- `stablediff-eval` — score generated images with FID and Inception Score (JSON output).
+- `stablediff-benchmark` — measure single-image inference latency and energy (JSON output).
+- `stablediff-pipeline` — run preprocess → train → generate → evaluate end-to-end, with total time and energy for the full run.
 
 This is the first piece of the larger job-queue service described in `CHECKLIST.md`; the same training/inference code will later be invoked by GPU workers.
 
