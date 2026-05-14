@@ -104,27 +104,51 @@ src/stablediff/
     generate.py     # stablediff-generate CLI
 ```
 
-## Bundled sample dataset: `data/Cat`
+## Bundled sample dataset: `data/sample`
 
-The repo includes `data/Cat/` with ~12.5k uncaptioned `.jpg` cat photos (the Cat half of the Microsoft Cats-vs-Dogs set). It is useful as a smoke-test target for training:
+The repo includes `data/sample/` with 10 uncaptioned `.jpg` cat photos (a tiny subset of the Microsoft Cats-vs-Dogs set). Use it for quick end-to-end smoke tests:
+
+**Train** a LoRA adapter:
 
 ```bash
 stablediff-train \
-    --data-dir data/Cat \
+    --data-dir data/sample \
     --default-caption "a photo of a cat" \
-    --output checkpoints/cats.pt \
+    --output output/model/sample.pt \
     --resolution 512 \
     --epochs 2 \
     --rank 8 \
-    --val-split 0.02 \
+    --val-split 0.1 \
     --mixed-precision fp16
 ```
 
-Keep `--epochs` low (1–3) on a dataset this large — each epoch is already ~12k optimizer iterations at `--batch-size 1`. Generate from the trained adapter with:
+**Generate** images from the checkpoint:
 
 ```bash
 stablediff-generate \
-    --lora checkpoints/cats.pt \
+    --lora output/model/sample.pt \
     --prompt "a fluffy ginger cat on a windowsill, soft natural light" \
-    --num-images 4 --seed 1234 --output outputs/cats
+    --num-images 10 --seed 1234 --output output/run1
 ```
+
+**Evaluate** generated images against the reference set (FID and Inception Score, written to JSON):
+
+```bash
+stablediff-eval \
+    --real-dir data/sample \
+    --fake-dir output/run1 \
+    --output output/metric/fid_is.json
+```
+
+Lower FID is better; higher Inception Score is better. Both metrics need a reasonably large image set to be meaningful — treat results on 10 images as a pipeline check only.
+
+**Benchmark** single-image inference latency and energy (CodeCarbon + high-precision timer, written to JSON):
+
+```bash
+stablediff-benchmark \
+    --prompt "a photo of a cat" \
+    --lora output/model/sample.pt \
+    --output output/metric/benchmark.json
+```
+
+GPU energy is measured via NVML; CPU/RAM figures are estimates (especially inside a VM without RAPL).

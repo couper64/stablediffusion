@@ -67,6 +67,7 @@ Desktop.ini
 
 # --- ML training outputs ---
 checkpoints/
+output/
 outputs/
 runs/
 logs/
@@ -74,6 +75,7 @@ wandb/
 tensorboard/
 lightning_logs/
 mlruns/
+metrics/
 
 # --- Model / artifact binaries (also tracked via Git LFS when committed) ---
 *.pt
