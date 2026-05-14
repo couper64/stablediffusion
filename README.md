@@ -98,10 +98,17 @@ The base model id is read from the checkpoint, so you only need to point at the 
 
 ```
 src/stablediff/
-    dataset.py      # ImageCaptionDataset
-    util.py         # save/load LoRA in *.pt format
-    train.py        # stablediff-train CLI
-    generate.py     # stablediff-generate CLI
+    dataset.py       # ImageCaptionDataset
+    util.py          # LoRA I/O, JSON helpers, upstream warning filters
+    preprocess.py    # stablediff-preprocess — metadata.jsonl from class folders
+    train.py         # stablediff-train
+    generate.py      # stablediff-generate
+    evaluate.py      # stablediff-eval — FID and Inception Score
+    benchmark.py     # stablediff-benchmark — single-image latency and energy
+    pipeline.py      # stablediff-pipeline — end-to-end workflow + total benchmark
+
+tests/               # unit and integration tests
+data/sample/         # bundled Cat/Dog smoke-test dataset (committed)
 ```
 
 ## Bundled sample dataset: `data/sample`
