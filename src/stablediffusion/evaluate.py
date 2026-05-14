@@ -2,7 +2,7 @@
 
 Example::
 
-    stablediff-eval \\
+    stablediffusion-eval \\
         --real-dir data/sample \\
         --fake-dir outputs/run1 \\
         --output metrics/fid_is.json

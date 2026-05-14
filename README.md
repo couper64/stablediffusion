@@ -1,23 +1,23 @@
-# stablediff
+# stablediffusion
 
 CLI tools for Stable Diffusion LoRA workflows on class-folder image datasets:
 
-- `stablediff-preprocess` — build `metadata.jsonl` captions from class subfolders.
-- `stablediff-train` — fine-tune a base Stable Diffusion model with LoRA and save the **best** checkpoint as a single `*.pt` file.
-- `stablediff-generate` — generate images with a trained LoRA (or the plain base model).
-- `stablediff-eval` — score generated images with FID and Inception Score (JSON output).
-- `stablediff-benchmark` — measure single-image inference latency and energy (JSON output).
-- `stablediff-pipeline` — run preprocess → train → generate → evaluate end-to-end, with total time and energy for the full run.
+- `stablediffusion-preprocess` — build `metadata.jsonl` captions from class subfolders.
+- `stablediffusion-train` — fine-tune a base Stable Diffusion model with LoRA and save the **best** checkpoint as a single `*.pt` file.
+- `stablediffusion-generate` — generate images with a trained LoRA (or the plain base model).
+- `stablediffusion-eval` — score generated images with FID and Inception Score (JSON output).
+- `stablediffusion-benchmark` — measure single-image inference latency and energy (JSON output).
+- `stablediffusion-pipeline` — run preprocess → train → generate → evaluate end-to-end, with total time and energy for the full run.
 
 This is the first piece of the larger job-queue service described in `CHECKLIST.md`; the same training/inference code will later be invoked by GPU workers.
 
 ## Install
 
-Environments are managed with **conda**. The repo ships an `environment.yml` that creates an env named `stablediff` with PyTorch (CUDA 12.1) plus the Hugging Face stack:
+Environments are managed with **conda**. The repo ships an `environment.yml` that creates an env named `stablediffusion` with PyTorch (CUDA 12.1) plus the Hugging Face stack:
 
 ```bash
 conda env create -f environment.yml
-conda activate stablediff
+conda activate stablediffusion
 pip install -e .
 ```
 
@@ -50,7 +50,7 @@ Supported extensions: `.jpg .jpeg .png .webp .bmp`.
 ## Train
 
 ```bash
-stablediff-train \
+stablediffusion-train \
     --data-dir data/my_set \
     --output checkpoints/best.pt \
     --base-model runwayml/stable-diffusion-v1-5 \
@@ -86,7 +86,7 @@ Add `--save-every-epoch` if you also want per-epoch checkpoints alongside the be
 ## Generate
 
 ```bash
-stablediff-generate \
+stablediffusion-generate \
     --lora checkpoints/best.pt \
     --prompt "a portrait of <subject>, cinematic lighting" \
     --negative-prompt "blurry, lowres" \
@@ -101,15 +101,15 @@ The base model id is read from the checkpoint, so you only need to point at the 
 ## Project layout
 
 ```
-src/stablediff/
+src/stablediffusion/
     dataset.py       # ImageCaptionDataset
     util.py          # LoRA I/O, JSON helpers, upstream warning filters
-    preprocess.py    # stablediff-preprocess — metadata.jsonl from class folders
-    train.py         # stablediff-train
-    generate.py      # stablediff-generate
-    evaluate.py      # stablediff-eval — FID and Inception Score
-    benchmark.py     # stablediff-benchmark — single-image latency and energy
-    pipeline.py      # stablediff-pipeline — end-to-end workflow + total benchmark
+    preprocess.py    # stablediffusion-preprocess — metadata.jsonl from class folders
+    train.py         # stablediffusion-train
+    generate.py      # stablediffusion-generate
+    evaluate.py      # stablediffusion-eval — FID and Inception Score
+    benchmark.py     # stablediffusion-benchmark — single-image latency and energy
+    pipeline.py      # stablediffusion-pipeline — end-to-end workflow + total benchmark
 
 tests/               # unit and integration tests
 data/sample/         # bundled Cat/Dog smoke-test dataset (committed)
@@ -131,13 +131,13 @@ data/sample/
 Regenerate captions after changing images with:
 
 ```bash
-stablediff-preprocess --data-dir data/sample --overwrite
+stablediffusion-preprocess --data-dir data/sample --overwrite
 ```
 
 **Train** a LoRA adapter:
 
 ```bash
-stablediff-train \
+stablediffusion-train \
     --data-dir data/sample \
     --output output/model/sample.pt \
     --resolution 512 \
@@ -150,7 +150,7 @@ stablediff-train \
 **Generate** images from the checkpoint:
 
 ```bash
-stablediff-generate \
+stablediffusion-generate \
     --lora output/model/sample.pt \
     --prompt "a fluffy ginger cat on a windowsill, soft natural light" \
     --num-images 10 --seed 1234 --output output/run1
@@ -159,7 +159,7 @@ stablediff-generate \
 **Evaluate** generated images against the reference set (FID and Inception Score, written to JSON):
 
 ```bash
-stablediff-eval \
+stablediffusion-eval \
     --real-dir data/sample \
     --fake-dir output/run1 \
     --output output/metric/fid_is.json
@@ -170,7 +170,7 @@ Lower FID is better; higher Inception Score is better. Both metrics need a reaso
 **Benchmark** single-image inference latency and energy (CodeCarbon + high-precision timer, written to JSON):
 
 ```bash
-stablediff-benchmark \
+stablediffusion-benchmark \
     --prompt "a photo of a cat" \
     --lora output/model/sample.pt \
     --output output/metric/benchmark.json

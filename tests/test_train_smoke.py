@@ -8,8 +8,8 @@ from pathlib import Path
 import pytest
 import torch
 
-from stablediff.train import main as train_main
-from stablediff.util import load_lora_checkpoint
+from stablediffusion.train import main as train_main
+from stablediffusion.util import load_lora_checkpoint
 
 pytestmark = [
     pytest.mark.integration,
@@ -24,7 +24,7 @@ def test_train_on_image_sample(sample_image_dir: Path, tmp_path: Path, monkeypat
         sys,
         "argv",
         [
-            "stablediff-train",
+            "stablediffusion-train",
             "--data-dir",
             str(sample_image_dir),
             "--output",

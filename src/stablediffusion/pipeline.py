@@ -4,13 +4,13 @@ Tracks total wall-clock time and energy for the full run via CodeCarbon.
 
 Example::
 
-    stablediff-pipeline \\
+    stablediffusion-pipeline \\
         --data-dir data/sample \\
         --output-dir output/pipeline_run
 
 Skip training and reuse an existing LoRA::
 
-    stablediff-pipeline \\
+    stablediffusion-pipeline \\
         --data-dir data/sample \\
         --output-dir output/pipeline_run \\
         --skip-train \\
@@ -34,7 +34,7 @@ from .util import suppress_known_upstream_warnings, write_json_results
 
 
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Run the full stablediff workflow on a class-folder dataset.")
+    p = argparse.ArgumentParser(description="Run the full stablediffusion workflow on a class-folder dataset.")
     p.add_argument("--data-dir", required=True, help="Dataset root with one subfolder per class.")
     p.add_argument("--output-dir", required=True, help="Directory for model, images, and metrics.")
     p.add_argument("--caption-template", default="a photo of a {class}")
@@ -101,7 +101,7 @@ def _execute_pipeline_steps(
         _run_cli(
             train.main,
             [
-                "stablediff-train",
+                "stablediffusion-train",
                 "--data-dir",
                 str(data_dir),
                 "--output",
@@ -126,7 +126,7 @@ def _execute_pipeline_steps(
 
     print("=== [3/4] generate ===")
     generate_argv = [
-        "stablediff-generate",
+        "stablediffusion-generate",
         "--lora",
         str(lora_path),
         "--output",
@@ -152,7 +152,7 @@ def _execute_pipeline_steps(
     _run_cli(
         evaluate.main,
         [
-            "stablediff-eval",
+            "stablediffusion-eval",
             "--real-dir",
             str(data_dir),
             "--fake-dir",
@@ -193,7 +193,7 @@ def run_pipeline(args: argparse.Namespace) -> Dict[str, Any]:
     for path in (model_dir, generated_dir, metrics_dir):
         path.mkdir(parents=True, exist_ok=True)
 
-    tracker = EmissionsTracker(project_name="stablediff-pipeline", save_to_file=False)
+    tracker = EmissionsTracker(project_name="stablediffusion-pipeline", save_to_file=False)
     tracker.start()
     start = time.perf_counter()
     lora_path = _execute_pipeline_steps(

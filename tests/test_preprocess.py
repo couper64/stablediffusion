@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from stablediff.preprocess import append_metadata, build_entries, load_existing_metadata
+from stablediffusion.preprocess import append_metadata, build_entries, load_existing_metadata
 
 
 def _touch(path: Path) -> None:

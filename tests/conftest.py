@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from stablediff.util import suppress_known_upstream_warnings
+from stablediffusion.util import suppress_known_upstream_warnings
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SAMPLE_DATASET_DIR = REPO_ROOT / "data" / "sample"

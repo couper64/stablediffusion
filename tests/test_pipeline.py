@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from stablediff.pipeline import list_class_names, prompts_for_classes, run_pipeline
+from stablediffusion.pipeline import list_class_names, prompts_for_classes, run_pipeline
 
 
 def _touch(path: Path) -> None:
@@ -51,10 +51,10 @@ def test_run_pipeline_steps_and_benchmark(tmp_path: Path, monkeypatch: pytest.Mo
 
         return _main
 
-    monkeypatch.setattr("stablediff.pipeline.EmissionsTracker", _FakeTracker)
-    monkeypatch.setattr("stablediff.pipeline.train.main", fake_cli("train"))
-    monkeypatch.setattr("stablediff.pipeline.generate.main", fake_cli("generate"))
-    monkeypatch.setattr("stablediff.pipeline.evaluate.main", fake_cli("evaluate"))
+    monkeypatch.setattr("stablediffusion.pipeline.EmissionsTracker", _FakeTracker)
+    monkeypatch.setattr("stablediffusion.pipeline.train.main", fake_cli("train"))
+    monkeypatch.setattr("stablediffusion.pipeline.generate.main", fake_cli("generate"))
+    monkeypatch.setattr("stablediffusion.pipeline.evaluate.main", fake_cli("evaluate"))
 
     output_dir = tmp_path / "out"
     summary = run_pipeline(

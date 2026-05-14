@@ -2,7 +2,7 @@
 
 Example::
 
-    stablediff-benchmark \\
+    stablediffusion-benchmark \\
         --prompt "a photo of a cat" \\
         --lora checkpoints/cats.pt \\
         --output metrics/benchmark.json
@@ -29,7 +29,7 @@ def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Benchmark inference latency and energy for one image.")
     p.add_argument("--prompt", required=True)
     p.add_argument("--negative-prompt", default="")
-    p.add_argument("--lora", default=None, help="Path to a LoRA checkpoint (*.pt) from stablediff-train.")
+    p.add_argument("--lora", default=None, help="Path to a LoRA checkpoint (*.pt) from stablediffusion-train.")
     p.add_argument("--lora-scale", type=float, default=1.0)
     p.add_argument("--base-model", default=None)
     p.add_argument("--steps", type=int, default=30)
@@ -125,7 +125,7 @@ def main() -> None:
         print("Running warmup generation...")
         _generate_one(pipe, args, device, generator)
 
-    tracker = EmissionsTracker(project_name="stablediff-benchmark", save_to_file=False)
+    tracker = EmissionsTracker(project_name="stablediffusion-benchmark", save_to_file=False)
     tracker.start()
     start = time.perf_counter()
     _generate_one(pipe, args, device, generator)

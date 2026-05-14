@@ -3,7 +3,7 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "stablediff"
+name = "stablediffusion"
 version = "0.1.0"
 description = "CLI tools to fine-tune Stable Diffusion with LoRA and generate images."
 requires-python = ">=3.9"
@@ -24,12 +24,12 @@ dependencies = [
 ]
 
 [project.scripts]
-stablediff-train = "stablediff.train:main"
-stablediff-generate = "stablediff.generate:main"
-stablediff-eval = "stablediff.evaluate:main"
-stablediff-benchmark = "stablediff.benchmark:main"
-stablediff-preprocess = "stablediff.preprocess:main"
-stablediff-pipeline = "stablediff.pipeline:main"
+stablediffusion-train = "stablediffusion.train:main"
+stablediffusion-generate = "stablediffusion.generate:main"
+stablediffusion-eval = "stablediffusion.evaluate:main"
+stablediffusion-benchmark = "stablediffusion.benchmark:main"
+stablediffusion-preprocess = "stablediffusion.preprocess:main"
+stablediffusion-pipeline = "stablediffusion.pipeline:main"
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]

@@ -2,7 +2,7 @@
 
 Example::
 
-    stablediff-train \\
+    stablediffusion-train \\
         --data-dir data/my_set \\
         --output checkpoints/best.pt \\
         --base-model runwayml/stable-diffusion-v1-5 \\

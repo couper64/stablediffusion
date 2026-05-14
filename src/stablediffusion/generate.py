@@ -3,10 +3,10 @@
 Examples::
 
     # plain SD generation
-    stablediff-generate --prompt "a photo of a corgi" --output outputs/
+    stablediffusion-generate --prompt "a photo of a corgi" --output outputs/
 
-    # using a LoRA checkpoint produced by ``stablediff-train``
-    stablediff-generate \\
+    # using a LoRA checkpoint produced by ``stablediffusion-train``
+    stablediffusion-generate \\
         --lora checkpoints/best.pt \\
         --prompt "a portrait of <subject>" \\
         --num-images 4 --steps 30 --guidance-scale 7.5 --seed 1234
@@ -35,7 +35,7 @@ def parse_args() -> argparse.Namespace:
         help="Text prompt. Pass multiple times for multiple prompts.",
     )
     p.add_argument("--negative-prompt", default="")
-    p.add_argument("--lora", default=None, help="Path to a LoRA checkpoint (*.pt) from stablediff-train.")
+    p.add_argument("--lora", default=None, help="Path to a LoRA checkpoint (*.pt) from stablediffusion-train.")
     p.add_argument("--lora-scale", type=float, default=1.0, help="Adapter scale applied at inference.")
     p.add_argument("--base-model", default=None,
                    help="Override base model id. Defaults to the checkpoint's base_model or SD 1.5.")

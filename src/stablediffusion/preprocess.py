@@ -8,7 +8,7 @@ Expects a standard image-classification layout::
 
 Example::
 
-    stablediff-preprocess \\
+    stablediffusion-preprocess \\
         --data-dir data/PetImages \\
         --caption-template "a photo of a {class}"
 """
