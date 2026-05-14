@@ -88,7 +88,7 @@ def main() -> None:
         pipe.unet.to(device, dtype=dtype)
         try:
             pipe.unet.set_adapters(["default"], weights=[args.lora_scale])
-        except Exception:
+        except (AttributeError, TypeError, ValueError):
             if args.lora_scale != 1.0:
                 print(f"  (warning: could not apply lora-scale={args.lora_scale}; using 1.0)")
 

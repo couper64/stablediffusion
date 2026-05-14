@@ -73,7 +73,7 @@ def _load_pipeline(
         pipe.unet.to(device, dtype=dtype)
         try:
             pipe.unet.set_adapters(["default"], weights=[args.lora_scale])
-        except Exception:
+        except (AttributeError, TypeError, ValueError):
             if args.lora_scale != 1.0:
                 print(f"  (warning: could not apply lora-scale={args.lora_scale}; using 1.0)")
 
@@ -85,7 +85,6 @@ def _load_pipeline(
 def _generate_one(
     pipe: StableDiffusionPipeline,
     args: argparse.Namespace,
-    device: str,
     generator: Optional[torch.Generator],
 ) -> None:
     pipe(
@@ -123,12 +122,12 @@ def main() -> None:
 
     if args.warmup:
         print("Running warmup generation...")
-        _generate_one(pipe, args, device, generator)
+        _generate_one(pipe, args, generator)
 
     tracker = EmissionsTracker(project_name="stablediffusion-benchmark", save_to_file=False)
     tracker.start()
     start = time.perf_counter()
-    _generate_one(pipe, args, device, generator)
+    _generate_one(pipe, args, generator)
     seconds_per_image = time.perf_counter() - start
     emissions_kg_co2 = tracker.stop()
 
