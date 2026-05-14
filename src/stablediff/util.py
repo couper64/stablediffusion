@@ -10,6 +10,7 @@ A LoRA checkpoint is a single ``torch.save`` dict with keys:
 
 from __future__ import annotations
 
+import json
 import warnings
 from pathlib import Path
 from typing import Any, Dict, Optional
@@ -32,6 +33,12 @@ def suppress_known_upstream_warnings() -> None:
         message=r".*BPE\.__init__ will not create from files anymore",
         category=DeprecationWarning,
     )
+
+
+def write_json_results(path: Path, payload: Dict[str, Any]) -> None:
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
 def save_lora(
