@@ -48,6 +48,11 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--guidance-scale", type=float, default=7.5)
     p.add_argument("--seed", type=int, default=1234)
     p.add_argument("--num-workers", type=int, default=0)
+    p.add_argument(
+        "--disable-safety-checker",
+        action="store_true",
+        help="Pass through to stablediffusion-generate (skip NSFW safety checker).",
+    )
     return p.parse_args()
 
 
@@ -143,6 +148,8 @@ def _execute_pipeline_steps(
     ]
     for prompt in prompts:
         generate_argv.extend(["--prompt", prompt])
+    if args.disable_safety_checker:
+        generate_argv.append("--disable-safety-checker")
     _run_cli(generate.main, generate_argv)
 
     print("=== [4/4] evaluate ===")

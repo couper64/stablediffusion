@@ -76,6 +76,7 @@ def test_run_pipeline_steps_and_benchmark(tmp_path: Path, monkeypatch: pytest.Mo
             guidance_scale=7.5,
             seed=1,
             num_workers=0,
+            disable_safety_checker=False,
         )
     )
 
@@ -107,6 +108,7 @@ def test_skip_train_requires_lora(tmp_path: Path) -> None:
         guidance_scale=7.5,
         seed=1,
         num_workers=0,
+        disable_safety_checker=False,
     )
     with pytest.raises(ValueError, match="--lora is required"):
         run_pipeline(args)

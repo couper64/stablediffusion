@@ -20,6 +20,13 @@ from peft import LoraConfig
 from peft.utils import get_peft_model_state_dict, set_peft_model_state_dict
 
 
+def sd_pipeline_load_kwargs(*, disable_safety_checker: bool = False) -> Dict[str, Any]:
+    """Extra ``from_pretrained`` kwargs for :class:`~diffusers.StableDiffusionPipeline`."""
+    if disable_safety_checker:
+        return {"safety_checker": None}
+    return {}
+
+
 def suppress_known_upstream_warnings() -> None:
     """Silence deprecation noise from dependencies until upstream removes it."""
     warnings.filterwarnings(

@@ -21,7 +21,12 @@ from typing import List, Optional
 import torch
 from diffusers import StableDiffusionPipeline
 
-from .util import attach_lora, load_lora_checkpoint, suppress_known_upstream_warnings
+from .util import (
+    attach_lora,
+    load_lora_checkpoint,
+    sd_pipeline_load_kwargs,
+    suppress_known_upstream_warnings,
+)
 
 DEFAULT_BASE_MODEL = "runwayml/stable-diffusion-v1-5"
 
@@ -49,6 +54,11 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--dtype", choices=["fp16", "bf16", "fp32"], default="fp16")
     p.add_argument("--enable-attention-slicing", action="store_true",
                    help="Reduce VRAM at the cost of speed.")
+    p.add_argument(
+        "--disable-safety-checker",
+        action="store_true",
+        help="Do not load the NSFW safety checker (not recommended for public-facing use).",
+    )
     return p.parse_args()
 
 
@@ -82,7 +92,7 @@ def main() -> None:
     pipe = StableDiffusionPipeline.from_pretrained(
         base_model,
         torch_dtype=dtype,
-        safety_checker=None,
+        **sd_pipeline_load_kwargs(disable_safety_checker=args.disable_safety_checker),
     )
     pipe.set_progress_bar_config(disable=False)
     pipe.to(device)

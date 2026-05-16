@@ -19,7 +19,13 @@ import torch
 from diffusers import StableDiffusionPipeline
 
 from .emissions import track_emissions
-from .util import attach_lora, load_lora_checkpoint, suppress_known_upstream_warnings, write_json_results
+from .util import (
+    attach_lora,
+    load_lora_checkpoint,
+    sd_pipeline_load_kwargs,
+    suppress_known_upstream_warnings,
+    write_json_results,
+)
 
 DEFAULT_BASE_MODEL = "runwayml/stable-diffusion-v1-5"
 
@@ -40,6 +46,11 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--warmup", action="store_true", help="Run one untimed warmup generation first.")
     p.add_argument("--output", required=True, help="Path to write JSON results.")
     p.add_argument("--enable-attention-slicing", action="store_true")
+    p.add_argument(
+        "--disable-safety-checker",
+        action="store_true",
+        help="Do not load the NSFW safety checker (not recommended for public-facing use).",
+    )
     return p.parse_args()
 
 
@@ -66,7 +77,7 @@ def _load_pipeline(
     pipe = StableDiffusionPipeline.from_pretrained(
         base_model,
         torch_dtype=dtype,
-        safety_checker=None,
+        **sd_pipeline_load_kwargs(disable_safety_checker=args.disable_safety_checker),
     )
     pipe.set_progress_bar_config(disable=True)
     pipe.to(device)
