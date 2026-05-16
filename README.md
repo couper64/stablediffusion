@@ -117,7 +117,59 @@ data/sample/         # bundled Cat/Dog smoke-test dataset (committed)
 
 ## Bundled sample dataset: `data/sample`
 
-The repo includes `data/sample/` with 10 cat and 10 dog `.jpg` photos in class subfolders (`Cat/`, `Dog/`), plus a `metadata.jsonl` with per-class captions. Use it for quick end-to-end smoke tests:
+The repo includes `data/sample/` with 10 cat and 10 dog `.jpg` photos in class subfolders (`Cat/`, `Dog/`), plus a `metadata.jsonl` with per-class captions. Use it for quick end-to-end smoke tests.
+
+### Entire pipeline (one command)
+
+`stablediffusion-pipeline` runs preprocess → train → generate → evaluate in one go, writes all artifacts under `--output-dir`, and records total wall-clock time and energy in `metrics/pipeline_benchmark.json`.
+
+From the repo root (with the `stablediffusion` conda env active and `pip install -e .` done):
+
+```bash
+stablediffusion-pipeline \
+    --data-dir data/sample \
+    --output-dir output/pipeline_run \
+    --epochs 2 \
+    --rank 8 \
+    --resolution 512 \
+    --val-split 0.1 \
+    --mixed-precision fp16 \
+    --num-workers 0 \
+    --num-images 4 \
+    --seed 1234
+```
+
+On an 8 GB GPU (e.g. RTX 4060), keep `--num-images 4` (default) and `--num-workers 0`; training already uses batch size 1 with fp16.
+
+**Outputs:**
+
+```
+output/pipeline_run/
+    pipeline.json              # paths and summary for the full run
+    model/lora.pt              # best LoRA checkpoint
+    generated/                 # images (one prompt per class: cat, dog)
+    metrics/
+        fid_is.json            # FID and Inception Score
+        pipeline_benchmark.json  # total time and CodeCarbon energy
+```
+
+`data/sample/metadata.jsonl` is regenerated during preprocess (overwrite).
+
+**Re-run generate + evaluate only** (skip training, reuse a checkpoint):
+
+```bash
+stablediffusion-pipeline \
+    --data-dir data/sample \
+    --output-dir output/pipeline_run2 \
+    --skip-train \
+    --lora output/pipeline_run/model/lora.pt \
+    --num-images 4 \
+    --seed 1234
+```
+
+Single-image latency and energy are not part of the pipeline; run `stablediffusion-benchmark` separately (see below).
+
+### Step by step
 
 **Preprocess** the sample dataset:
 
@@ -176,4 +228,4 @@ stablediffusion-benchmark \
     --output output/metric/benchmark.json
 ```
 
-GPU energy is measured via NVML; CPU/RAM figures are estimates (especially inside a VM without RAPL).
+GPU energy uses NVML when the driver exposes power counters; otherwise the tools estimate GPU draw from utilization × enforced power limit (see `energy_breakdown` in benchmark JSON). Use the proprietary `nvidia-driver-595` package on Ubuntu if `nvidia-smi` shows `Pwr:Usage` as `N/A` with the open kernel module. CPU/RAM figures may be estimates when RAPL is unavailable.

@@ -52,9 +52,9 @@ def save_lora(
     path.parent.mkdir(parents=True, exist_ok=True)
     state_dict = get_peft_model_state_dict(unet)
     payload: Dict[str, Any] = {
-        "lora_state_dict": state_dict,
-        "lora_config": lora_config_kwargs,
-        "base_model": base_model,
+        "lora_state_dict" : state_dict,
+        "lora_config"     : lora_config_kwargs,
+        "base_model"      : base_model,
     }
     if meta:
         payload["meta"] = meta

@@ -21,14 +21,11 @@ from __future__ import annotations
 
 import argparse
 import sys
-import time
-from dataclasses import asdict
 from pathlib import Path
 from typing import Any, Dict, List
 
-from codecarbon import EmissionsTracker
-
 from . import evaluate, generate, train
+from .emissions import track_emissions
 from .preprocess import append_metadata, caption_for_class, iter_classification_images
 from .util import suppress_known_upstream_warnings, write_json_results
 
@@ -193,55 +190,50 @@ def run_pipeline(args: argparse.Namespace) -> Dict[str, Any]:
     for path in (model_dir, generated_dir, metrics_dir):
         path.mkdir(parents=True, exist_ok=True)
 
-    tracker = EmissionsTracker(project_name="stablediffusion-pipeline", save_to_file=False)
-    tracker.start()
-    start = time.perf_counter()
-    lora_path = _execute_pipeline_steps(
-        args,
-        data_dir=data_dir,
-        metadata_path=metadata_path,
-        model_path=model_path,
-        generated_dir=generated_dir,
-        fid_path=fid_path,
-        lora_path=lora_path,
-        prompts=prompts,
-    )
-    seconds_total = time.perf_counter() - start
-    emissions_kg_co2 = tracker.stop()
+    with track_emissions("stablediffusion-pipeline") as energy:
+        lora_path = _execute_pipeline_steps(
+            args,
+            data_dir=data_dir,
+            metadata_path=metadata_path,
+            model_path=model_path,
+            generated_dir=generated_dir,
+            fid_path=fid_path,
+            lora_path=lora_path,
+            prompts=prompts,
+        )
 
-    emissions: Dict[str, Any] = {}
-    if tracker.final_emissions_data is not None:
-        emissions = asdict(tracker.final_emissions_data)
-
+    seconds_total = energy["seconds"]
     pipeline_benchmark = {
-        "seconds_total": seconds_total,
-        "emissions_kg_co2": emissions_kg_co2,
-        "energy_kwh": emissions.get("energy_consumed"),
-        "skipped_train": args.skip_train,
-        "codecarbon": emissions,
+        "seconds_total"    : seconds_total,
+        "emissions_kg_co2" : energy["emissions_kg_co2"],
+        "energy_kwh"       : energy["energy_kwh"],
+        "energy_breakdown" : energy.get("energy_breakdown"),
+        "skipped_train"    : args.skip_train,
+        "codecarbon"       : energy["codecarbon"],
     }
     write_json_results(pipeline_benchmark_path, pipeline_benchmark)
 
     summary = {
-        "data_dir": str(data_dir),
-        "output_dir": str(output_dir),
-        "classes": class_names,
-        "prompts": prompts,
-        "metadata": str(metadata_path),
-        "lora": str(lora_path),
-        "generated_dir": str(generated_dir),
-        "fid_is": str(fid_path),
-        "pipeline_benchmark": str(pipeline_benchmark_path),
-        "seconds_total": seconds_total,
-        "emissions_kg_co2": emissions_kg_co2,
-        "energy_kwh": emissions.get("energy_consumed"),
-        "skipped_train": args.skip_train,
+        "data_dir"           : str(data_dir),
+        "output_dir"         : str(output_dir),
+        "classes"            : class_names,
+        "prompts"            : prompts,
+        "metadata"           : str(metadata_path),
+        "lora"               : str(lora_path),
+        "generated_dir"      : str(generated_dir),
+        "fid_is"             : str(fid_path),
+        "pipeline_benchmark" : str(pipeline_benchmark_path),
+        "seconds_total"      : seconds_total,
+        "emissions_kg_co2"   : energy["emissions_kg_co2"],
+        "energy_kwh"         : energy["energy_kwh"],
+        "energy_breakdown"   : energy.get("energy_breakdown"),
+        "skipped_train"      : args.skip_train,
     }
     summary_path = output_dir / "pipeline.json"
     write_json_results(summary_path, summary)
     print(f"Pipeline complete in {seconds_total:.1f}s")
-    if emissions_kg_co2 is not None:
-        print(f"Emissions: {emissions_kg_co2 * 1000:.3f} g CO2eq")
+    if energy["emissions_kg_co2"] is not None:
+        print(f"Emissions: {energy['emissions_kg_co2'] * 1000:.3f} g CO2eq")
     print(f"Summary: {summary_path}")
     print(f"Benchmark: {pipeline_benchmark_path}")
     return summary

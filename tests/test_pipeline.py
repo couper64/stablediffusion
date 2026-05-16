@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+from contextlib import contextmanager
 from pathlib import Path
 
 import pytest
@@ -13,15 +14,15 @@ def _touch(path: Path) -> None:
     path.write_bytes(b"fake")
 
 
-class _FakeTracker:
-    def __init__(self, *args: object, **kwargs: object) -> None:
-        self.final_emissions_data = None
-
-    def start(self) -> None:
-        return None
-
-    def stop(self) -> float:
-        return 0.001
+@contextmanager
+def _fake_track_emissions(_project_name: str):
+    yield {
+        "seconds": 0.0,
+        "energy_kwh": 0.001,
+        "emissions_kg_co2": 0.001,
+        "energy_breakdown": None,
+        "codecarbon": {},
+    }
 
 
 def test_list_class_names_and_prompts(tmp_path: Path) -> None:
@@ -51,7 +52,7 @@ def test_run_pipeline_steps_and_benchmark(tmp_path: Path, monkeypatch: pytest.Mo
 
         return _main
 
-    monkeypatch.setattr("stablediffusion.pipeline.EmissionsTracker", _FakeTracker)
+    monkeypatch.setattr("stablediffusion.pipeline.track_emissions", _fake_track_emissions)
     monkeypatch.setattr("stablediffusion.pipeline.train.main", fake_cli("train"))
     monkeypatch.setattr("stablediffusion.pipeline.generate.main", fake_cli("generate"))
     monkeypatch.setattr("stablediffusion.pipeline.evaluate.main", fake_cli("evaluate"))

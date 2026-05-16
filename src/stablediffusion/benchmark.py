@@ -12,14 +12,13 @@ from __future__ import annotations
 
 import argparse
 import time
-from dataclasses import asdict
 from pathlib import Path
 from typing import Any, Dict, Optional
 
 import torch
-from codecarbon import EmissionsTracker
 from diffusers import StableDiffusionPipeline
 
+from .emissions import track_emissions
 from .util import attach_lora, load_lora_checkpoint, suppress_known_upstream_warnings, write_json_results
 
 DEFAULT_BASE_MODEL = "runwayml/stable-diffusion-v1-5"
@@ -47,7 +46,12 @@ def parse_args() -> argparse.Namespace:
 def _resolve_dtype(name: str, device: str) -> torch.dtype:
     if device != "cuda":
         return torch.float32
-    return {"fp16": torch.float16, "bf16": torch.bfloat16, "fp32": torch.float32}[name]
+    dtypes = {
+        "fp16" : torch.float16,
+        "bf16" : torch.bfloat16,
+        "fp32" : torch.float32,
+    }
+    return dtypes[name]
 
 
 def _load_pipeline(
@@ -124,39 +128,33 @@ def main() -> None:
         print("Running warmup generation...")
         _generate_one(pipe, args, generator)
 
-    tracker = EmissionsTracker(project_name="stablediffusion-benchmark", save_to_file=False)
-    tracker.start()
-    start = time.perf_counter()
-    _generate_one(pipe, args, generator)
-    seconds_per_image = time.perf_counter() - start
-    emissions_kg_co2 = tracker.stop()
+    with track_emissions("stablediffusion-benchmark") as energy:
+        _generate_one(pipe, args, generator)
 
-    emissions: Dict[str, Any] = {}
-    if tracker.final_emissions_data is not None:
-        emissions = asdict(tracker.final_emissions_data)
-
+    seconds_per_image = energy["seconds"]
     results = {
-        "prompt": args.prompt,
-        "negative_prompt": args.negative_prompt,
-        "lora": args.lora,
-        "base_model": base_model,
-        "device": device,
-        "dtype": args.dtype,
-        "steps": args.steps,
-        "guidance_scale": args.guidance_scale,
-        "height": args.height,
-        "width": args.width,
-        "seed": args.seed,
-        "seconds_per_image": seconds_per_image,
-        "emissions_kg_co2": emissions_kg_co2,
-        "energy_kwh": emissions.get("energy_consumed"),
-        "codecarbon": emissions,
+        "prompt"             : args.prompt,
+        "negative_prompt"    : args.negative_prompt,
+        "lora"               : args.lora,
+        "base_model"         : base_model,
+        "device"             : device,
+        "dtype"              : args.dtype,
+        "steps"              : args.steps,
+        "guidance_scale"     : args.guidance_scale,
+        "height"             : args.height,
+        "width"              : args.width,
+        "seed"               : args.seed,
+        "seconds_per_image"  : seconds_per_image,
+        "emissions_kg_co2"   : energy["emissions_kg_co2"],
+        "energy_kwh"         : energy["energy_kwh"],
+        "energy_breakdown"   : energy.get("energy_breakdown"),
+        "codecarbon"         : energy["codecarbon"],
     }
     output_path = Path(args.output)
     write_json_results(output_path, results)
     print(f"Generated 1 image in {seconds_per_image:.3f}s")
-    if emissions_kg_co2 is not None:
-        print(f"Emissions: {emissions_kg_co2 * 1000:.3f} g CO2eq")
+    if energy["emissions_kg_co2"] is not None:
+        print(f"Emissions: {energy['emissions_kg_co2'] * 1000:.3f} g CO2eq")
     print(f"Saved results to {output_path}")
 
 

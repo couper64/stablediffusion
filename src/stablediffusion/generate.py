@@ -55,7 +55,12 @@ def parse_args() -> argparse.Namespace:
 def _resolve_dtype(name: str, device: str) -> torch.dtype:
     if device != "cuda":
         return torch.float32
-    return {"fp16": torch.float16, "bf16": torch.bfloat16, "fp32": torch.float32}[name]
+    dtypes = {
+        "fp16" : torch.float16,
+        "bf16" : torch.bfloat16,
+        "fp32" : torch.float32,
+    }
+    return dtypes[name]
 
 
 def main() -> None:

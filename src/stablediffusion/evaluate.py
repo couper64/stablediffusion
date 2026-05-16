@@ -67,13 +67,13 @@ def main() -> None:
     )
 
     results = {
-        "real_dir": str(real_dir.resolve()),
-        "fake_dir": str(fake_dir.resolve()),
-        "device": device,
-        "batch_size": args.batch_size,
-        "fid": metrics["frechet_inception_distance"],
-        "inception_score_mean": metrics["inception_score_mean"],
-        "inception_score_std": metrics["inception_score_std"],
+        "real_dir"             : str(real_dir.resolve()),
+        "fake_dir"             : str(fake_dir.resolve()),
+        "device"               : device,
+        "batch_size"           : args.batch_size,
+        "fid"                  : metrics["frechet_inception_distance"],
+        "inception_score_mean" : metrics["inception_score_mean"],
+        "inception_score_std"  : metrics["inception_score_std"],
     }
     output_path = Path(args.output)
     write_json_results(output_path, results)

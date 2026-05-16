@@ -98,10 +98,10 @@ def main() -> None:
 
     lora_alpha = args.lora_alpha if args.lora_alpha is not None else args.rank
     lora_config_kwargs = {
-        "r": args.rank,
-        "lora_alpha": lora_alpha,
-        "init_lora_weights": "gaussian",
-        "target_modules": DEFAULT_TARGET_MODULES,
+        "r"                 : args.rank,
+        "lora_alpha"        : lora_alpha,
+        "init_lora_weights" : "gaussian",
+        "target_modules"    : DEFAULT_TARGET_MODULES,
     }
     unet.add_adapter(LoraConfig(**lora_config_kwargs))
     lora_params = [p for p in unet.parameters() if p.requires_grad]
@@ -260,12 +260,12 @@ def main() -> None:
                 lora_config_kwargs=lora_config_kwargs,
                 base_model=args.base_model,
                 meta={
-                    "epoch": epoch + 1,
-                    "train_loss": train_mean,
-                    "val_loss": None if math.isnan(val_mean) else val_mean,
-                    "best_metric": best_metric,
-                    "metric_kind": best_kind,
-                    "resolution": args.resolution,
+                    "epoch"       : epoch + 1,
+                    "train_loss"  : train_mean,
+                    "val_loss"    : None if math.isnan(val_mean) else val_mean,
+                    "best_metric" : best_metric,
+                    "metric_kind" : best_kind,
+                    "resolution"  : args.resolution,
                 },
             )
             print(f"  -> new best {best_kind}={best_metric:.4f}; saved to {output_path}")
